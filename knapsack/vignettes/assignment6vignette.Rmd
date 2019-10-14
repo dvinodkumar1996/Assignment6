@@ -1,8 +1,8 @@
 ---
-title: "Lab6Vignette"
+title: "assignment6vignette"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Lab6Vignette}
+  %\VignetteIndexEntry{assignment6vignette}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
