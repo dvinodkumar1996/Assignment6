@@ -1,6 +1,6 @@
 Package: knapsack
 Type: Package
-Title: The package solves the knapsack problem in three different ways
+Title: The package solve the knapsack problem in three different ways
 Version: 1.0
 Date: 2019-10-09
 Author: Vinod Kumar Dasari and Gowtham Kukkemane Mahalingabhat
