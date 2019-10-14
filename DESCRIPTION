@@ -1,0 +1,11 @@
+Package: knapsack
+Type: Package
+Title: The package solves the knapsack problem in three different ways
+Version: 1.0
+Date: 2019-10-09
+Author: Vinod Kumar Dasari and Gowtham Kukkemane Mahalingabhat
+Maintainer: Vinod kumar and Gowtham Kukkemane Mahalingabhat<dvinodkumar1996@gmail.com>
+Description: The package contains three different functions to solve knapsack problem.
+License: GPL (>= 2)
+Imports: Rcpp (>= 1.0.2)
+LinkingTo: Rcpp

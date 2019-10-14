@@ -1,0 +1,142 @@
+---
+title: "Lab6Vignette"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Lab6Vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(knapsack)
+```
+
+# Knapsack Package 
+
+The Knapsack Package implements different methods for solving the knapsack problem:
+
+* Brute Force Method
+
+* Dynamic Knapsack Method
+
+* Greedy Knapsack Method
+
+## Creating dataset
+
+```{r generate dataset, eval=TRUE}
+
+set.seed(42)
+n <- 2000
+knapsack_objects <-
+  data.frame(
+    w=sample(1:4000, size = n, replace = TRUE),
+    v=runif(n = n, 0, 10000)
+  )
+```
+
+## Brute Force Knapsack Method
+
+The only solution that is guaranteed to give a correct answer in all situations for the knapsack problem is using brute-force search, i.e. going through all possible alternatives and return the maximum value found. This approach is of complexity O(2^n) since all possible combinations 2n needs to be evaluated.
+
+The function knapsack brute_force_knapsack(x, W) takes in two arguments, "x" is the dataframe with twovariables v and w and "W" is the maximum capacity of the knapsack. The function returns the maximum knapsack value and which elements in the dataset.
+
+```{r execution of brute_force_knapsack function, eval=TRUE}
+brute_force_knapsack(knapsack_objects[1:8,],3500)
+```
+
+Question: How long time does it takes to run the algorithm for n = 16 objects?
+```{r question2,eval=TRUE}
+system.time(brute_force_knapsack(knapsack_objects[1:16,],2000))
+```
+
+## Dynamic programming
+
+In dynamic programming if the weights are actually discrete values (as in our
+example) we can use this to create an algorithm that can solve the knapsack problem exact by iterating over all possible values of w.
+
+The function knapsack knapsack_dynamic(x, W) takes in two arguments, "x" is the dataframe with twovariables v and w and "W" is the maximum capacity of the knapsack. This function should return the same results as the brute force algorithm, but unlike the brute force it should scale much better since the algorithm will run in O(Wn).
+
+```{r execution of knapsack_dynamic function,eval=TRUE}
+knapsack_dynamic(x = knapsack_objects[1:8,], W = 3500,fast = FALSE)
+```
+
+Question: How much time does it takes to run the algorithm for n = 500 objects?
+
+```{r question, eval=TRUE}
+system.time(knapsack_dynamic(x= knapsack_objects[1:500,], W = 3500,fast = FALSE))
+```
+
+## Greedy Heuristic
+
+This algorithm will not give an exact result (but it can be shown that it will return at least 50% of the true maximum value), but it will reduce the computational complexity considerably (actually to O(n log n) due to the sorting part of the algorithm).
+
+```{r execution of greedy_knapsack function, eval=TRUE}
+greedy_knapsack(knapsack_objects[1:8,],3500)
+```
+
+Question: How long time does it takes to run the algorithm for n = 1000000 objects?
+
+```{r question3, eval=TRUE}
+set.seed(42)
+n <- 1000000
+knapsack_objects <-
+  data.frame(
+    w=sample(1:4000, size = n, replace = TRUE),
+    v=runif(n = n, 0, 10000)
+  )
+  
+system.time(greedy_knapsack(knapsack_objects[1:1000000,],3500))
+```
+
+## Profiling and optimizing the code
+
+In this section knapsack_dynamic function is profiled using "microbenchmark" library and understand the performance of the code. Microbenchmark function runs the same code for given input number of objects for specific number of times and outputs the mean time taken by the algorithm for n number of objects.
+
+```{r profiling knapsack_dynamic function,eval=TRUE}
+library(microbenchmark)
+microbenchmark::microbenchmark(knapsack_dynamic(x = knapsack_objects[1:50,], W = 3500,fast = FALSE),times = 5)
+
+```
+
+The above result displays runtime of running 50 objects for 5 times corresponding mean, median time taken in running the same. The below following are the methods to optimize the code using Rcpp method or parallelization method. The same example is used at the end of below section after implementing the Rcpp method.
+
+## Implement the fast version of the function using Rcpp
+
+One way of improving your code would be to run some parts of the code using Rcpp and writing this part of the code using C++. 
+We have used Rcpp optimization method for knapsack_dynamic function and to improve the same by adding the logical argument fast. The argument should be FALSE by default (so it works with the test suite where we have not specified the argument fast).
+The below code shows a comparison when fast argument is set FALSE and TRUE.
+
+```{r Rcpp implemetation for knapsack_dynamic function, eval=TRUE}
+knapsack_dynamic(x = knapsack_objects[1:50,], W = 3500,fast = FALSE)
+system.time(knapsack_dynamic(x = knapsack_objects[1:20,], W = 2000, fast = FALSE))
+
+knapsack_dynamic(x = knapsack_objects[1:50,], W = 3500,fast = TRUE)
+system.time(knapsack_dynamic(x = knapsack_objects[1:20,], W = 2000, fast = TRUE))
+
+```
+
+Profiling of dynamic_knapsack code after implementing Rcpp
+
+```{r profiling after Rcpp implementation, eval=TRUE}
+library(microbenchmark)
+microbenchmark::microbenchmark(knapsack_dynamic(x = knapsack_objects[1:50,], W = 3500,fast = TRUE),times = 5)
+```
+
+
+
+Question: What performance gain could you get by using Rcpp and C++?
+
+By successfully implementing Rcpp and c++ code in one chunk of the knapsack_dynamic function, the user run time has reduced significantly. C++ code was used to execute a nested loop to create a matrix which is more faster than R loops. The above example shows by implementation and comparison before and anfter using the Rcpp and c++.
+
+
+
+
+
+
